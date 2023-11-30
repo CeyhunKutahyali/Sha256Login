@@ -58,7 +58,7 @@ namespace Sha256Login
             }
             finally
             {
-                if(ConnectionString.connection != null)
+                if (ConnectionString.connection != null)
                 {
                     ConnectionString.connection().Close();
                 }
