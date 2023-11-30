@@ -13,20 +13,6 @@ namespace Sha256Login
         }
 
 
-        private string CreateSHA256(string s)
-        {
-            var sha256 = SHA256.Create();
-            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(s));
-
-            var sb = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                sb.Append(bytes[i].ToString("x2"));
-            }
-            return sb.ToString();
-        }
-
-
         private void button1_Click(object sender, EventArgs e)
         {
             try
@@ -37,10 +23,11 @@ namespace Sha256Login
                 }
                 else
                 {
+                    Methods methods = new Methods();
                     string query = "SELECT * FROM Login WHERE Username = @p1 AND Password = @p2";
                     SqlCommand command = new SqlCommand(query, ConnectionString.connection());
                     command.Parameters.AddWithValue("@p1", txtUsername.Text);
-                    command.Parameters.AddWithValue("@p2", CreateSHA256(txtPassword.Text));
+                    command.Parameters.AddWithValue("@p2", methods.CreateSHA256(txtPassword.Text));
                     SqlDataReader reader = command.ExecuteReader();
                     if (reader.Read())
                     {
@@ -58,10 +45,8 @@ namespace Sha256Login
             }
             finally
             {
-                if (ConnectionString.connection != null)
-                {
-                    ConnectionString.connection().Close();
-                }
+                Methods methods = new Methods ();
+                methods.CloseConnection();
             }
         }
 
@@ -80,10 +65,11 @@ namespace Sha256Login
                 }
                 else
                 {
+                    Methods methods = new Methods();
                     string query1 = "INSERT INTO Login (Username, Password, Deleted) VALUES (@p1, @p2, 0)";
                     SqlCommand command1 = new SqlCommand(query1, ConnectionString.connection());
                     command1.Parameters.AddWithValue("@p1", txtUsername.Text);
-                    command1.Parameters.AddWithValue("@p2", CreateSHA256(txtPassword.Text));// Þifreyi SHA256 ile kodlayýp o þekilde DB'ye yazacak.
+                    command1.Parameters.AddWithValue("@p2", methods.CreateSHA256(txtPassword.Text));// Þifreyi SHA256 ile kodlayýp o þekilde DB'ye yazacak.
                     command1.ExecuteNonQuery();
                     MessageBox.Show(txtUsername.Text + " : " + "Kullanýcý Kayýt Ýþlemi Baþarýlý");
                 }
@@ -94,10 +80,8 @@ namespace Sha256Login
             }
             finally
             {
-                if (ConnectionString.connection != null)
-                {
-                    ConnectionString.connection().Close();
-                }
+                Methods methods = new Methods();
+                methods.CloseConnection();
             }
         }
 
@@ -112,10 +96,11 @@ namespace Sha256Login
 
                 if (reader.HasRows)
                 {
+                    Methods methods = new Methods();
                     string query1 = "UPDATE Login SET Password = @p2 WHERE Username = @p1";
                     SqlCommand command1 = new SqlCommand(query1, ConnectionString.connection());
                     command1.Parameters.AddWithValue("@p1", txtUsername.Text);
-                    command1.Parameters.AddWithValue("@p2", CreateSHA256(txtPassword.Text));
+                    command1.Parameters.AddWithValue("@p2", methods.CreateSHA256(txtPassword.Text));
                     command1.ExecuteNonQuery();
                     MessageBox.Show(txtUsername.Text + " : " + "Þifre Deðiþtirildi.");
                 }
@@ -130,10 +115,8 @@ namespace Sha256Login
             }
             finally
             {
-                if (ConnectionString.connection != null)
-                {
-                    ConnectionString.connection().Close();
-                }
+                Methods methods = new Methods();
+                methods.CloseConnection();
             }
         }
     }
